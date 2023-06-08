@@ -1,13 +1,13 @@
 import os
 from difflib import SequenceMatcher
-import fitz
+from PyPDF2 import PdfFileReader
 import streamlit as st
 
 def extract_text_from_pdf(pdf_path):
-    pdf = fitz.open(pdf_path)
+    pdf = PdfFileReader(open(pdf_path, 'rb'))
     text = ''
-    for page in pdf:
-        text += page.get_text()
+    for page in range(pdf.getNumPages()):
+        text += pdf.getPage(page).extractText()
     return text
 
 def compare_texts(text1, text2):
