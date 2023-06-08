@@ -1,4 +1,4 @@
-mport streamlit as st
+import streamlit as st
 from language_tool_python import LanguageTool
 
 def correct_grammar(text):
@@ -17,5 +17,6 @@ def main():
         st.subheader("Corrected Text")
         st.write(corrected_text)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
+
