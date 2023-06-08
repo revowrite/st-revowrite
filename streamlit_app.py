@@ -1,12 +1,20 @@
 import streamlit as st
-import subprocess
+import pip
 
 def install_dependencies():
     required_packages = [
         'streamlit',
         'language-tool-python'
     ]
-    subprocess.check_call(['pip', 'install'] + required_packages)
+
+    st.write("Installing dependencies...")
+    st.empty()
+    st.info("This may take a few moments.")
+
+    for package in required_packages:
+        pip.main(['install', package])
+
+    st.success("Dependencies installed successfully.")
 
 def correct_grammar(text):
     import language_tool_python
@@ -29,4 +37,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
