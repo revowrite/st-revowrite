@@ -1,28 +1,12 @@
 import streamlit as st
-import pipreqs
+import subprocess
 
 def install_dependencies():
-    required_packages = ['streamlit', 'language-tool-python']
-    pipreqs_path = '/tmp/requirements.txt'
-
-    # Generate requirements.txt file
-    pipreqs.generate('.', pipreqs_path, encoding='utf-8')
-
-    # Install required packages using pip
-    st.write("Installing dependencies...")
-    st.empty()
-    st.info("This may take a few moments.")
-
-    cmd = ['pip', 'install', '-r', pipreqs_path]
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-
-    if process.returncode != 0:
-        st.error("Failed to install dependencies.")
-        st.code(stderr.decode('utf-8'))
-    else:
-        st.success("Dependencies installed successfully.")
-        st.code(stdout.decode('utf-8'))
+    required_packages = [
+        'streamlit',
+        'language-tool-python'
+    ]
+    subprocess.check_call(['pip', 'install'] + required_packages)
 
 def correct_grammar(text):
     import language_tool_python
@@ -45,3 +29,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
