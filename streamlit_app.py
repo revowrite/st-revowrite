@@ -1,26 +1,21 @@
 import streamlit as st
-import spacy
+import subprocess
+
+def install_dependencies():
+    required_packages = ['streamlit', 'language-tool-python']
+    for package in required_packages:
+        subprocess.check_call(['pip', 'install', package])
 
 def correct_grammar(text):
-    # Load the English language model in spaCy
-    nlp = spacy.load('en_core_web_sm')
-
-    # Process the text with spaCy
-    doc = nlp(text)
-
-    # Implement your grammar correction logic using spaCy's syntactic analysis
-
-    # Example rule: Correct "is not" to "isn't"
-    for token in doc:
-        if token.text == "is" and token.idx > 0 and doc[token.i-1].text.lower() == "not":
-            corrected_text = doc.text[:token.idx-1] + "n't" + doc.text[token.idx+len(token):]
-            doc = nlp(corrected_text)
-
-    corrected_text = doc.text
-
+    import language_tool_python
+    tool = language_tool_python.LanguageTool('en-US')
+    matches = tool.check(text)
+    corrected_text = language_tool_python.correct(text, matches)
     return corrected_text
 
 def main():
+    install_dependencies()
+
     st.title("Grammar Checker")
     st.write("Enter text and click the 'Check Grammar' button to correct grammar mistakes.")
 
