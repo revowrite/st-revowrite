@@ -1,10 +1,27 @@
 import streamlit as st
-import language_check
+import re
+from spellchecker import SpellChecker
 
 def correct_grammar(text):
-    tool = language_check.LanguageTool('en-US')
-    matches = tool.check(text)
-    corrected_text = language_check.correct(text, matches)
+    spell = SpellChecker()
+
+    # Tokenize the text into sentences
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+
+    # Correct the spelling for each sentence
+    corrected_sentences = []
+    for sentence in sentences:
+        words = sentence.split()
+        corrected_words = []
+        for word in words:
+            corrected_word = spell.correction(word)
+            corrected_words.append(corrected_word)
+        corrected_sentence = ' '.join(corrected_words)
+        corrected_sentences.append(corrected_sentence)
+
+    # Join the corrected sentences into a single text
+    corrected_text = ' '.join(corrected_sentences)
+
     return corrected_text
 
 def main():
@@ -13,12 +30,9 @@ def main():
 
     text = st.text_area("Enter text", height=200)
     if st.button("Check Grammar"):
-        try:
-            corrected_text = correct_grammar(text)
-            st.subheader("Corrected Text")
-            st.write(corrected_text)
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        corrected_text = correct_grammar(text)
+        st.subheader("Corrected Text")
+        st.write(corrected_text)
 
 if __name__ == "__main__":
     main()
