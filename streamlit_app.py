@@ -1,37 +1,48 @@
+import os
+from difflib import SequenceMatcher
+from PyPDF2 import PdfReader
 import streamlit as st
-import cv2
-import pytesseract
-from PIL import Image
-import io
 
-# Set up the Tesseract OCR executable path
-pytesseract.pytesseract.tesseract_cmd = r'/opt/homebrew/bin/tesseract'
+def extract_text_from_pdf(pdf_path):
+    pdf = PdfReader(pdf_path)
+    text = ''
+    for page in range(len(pdf.pages)):
+        text += pdf.pages[page].extract_text()
+    return text
 
-# Define a function to perform OCR on the selected image and display the result
-def perform_ocr(file_bytes):
-    # Open the image from the uploaded file bytes
-    img = Image.open(io.BytesIO(file_bytes))
+def compare_texts(text1, text2):
+    return SequenceMatcher(None, text1, text2).ratio()
 
-    # Convert the image to grayscale and perform OCR
-    img = img.convert('L')
-    text = pytesseract.image_to_string(img)
+def check_plagiarism(given_pdf_folder, local_pdf_folder):
+    given_pdfs = os.listdir(given_pdf_folder)
+    local_pdfs = os.listdir(local_pdf_folder)
 
-    # Display the OCR result
-    st.write("OCR Result:")
-    st.write(text)
+    for given_pdf in given_pdfs:
+        given_pdf_path = os.path.join(given_pdf_folder, given_pdf)
+        given_text = extract_text_from_pdf(given_pdf_path)
 
-def main():
-    st.title("Image OCR")
+        total_similarity = 0
+        for local_pdf in local_pdfs:
+            local_pdf_path = os.path.join(local_pdf_folder, local_pdf)
+            local_text = extract_text_from_pdf(local_pdf_path)
+            similarity = compare_texts(given_text, local_text)
+            st.write(f'{local_pdf}: {similarity * 100}%')
+            total_similarity += similarity
 
-    # Display a file uploader widget
-    uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
+        overall_plagiarism = (total_similarity / len(local_pdfs)) * 100
+        st.write(f'\nOverall Plagiarism for {given_pdf}: {overall_plagiarism}%')
 
-    if uploaded_file is not None:
-        # Read the file bytes and perform OCR
-        image_bytes = uploaded_file.read()
-        perform_ocr(image_bytes)
+# Streamlit app
+st.header('Plagiarism Checker')
 
-if _name_ == '_main_':
-    main()
+# GUI for selecting the given PDF folder
+given_pdf_folder = st.text_input('Enter Given PDF Folder Path')
 
-#streamlit run front.py
+# GUI for selecting the local PDF folder
+local_pdf_folder = st.text_input('Enter Local PDF Folder Path')
+
+if st.button('Check Plagiarism'):
+    if given_pdf_folder and local_pdf_folder:
+        check_plagiarism(given_pdf_folder, local_pdf_folder)
+    else:
+        st.warning('Please enter both the Given PDF folder path and the Local PDF folder path.')
