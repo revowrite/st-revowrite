@@ -1,10 +1,23 @@
-from bs4 import BeautifulSoup
+import subprocess
+import sys
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# Install beautifulsoup4
+install("beautifulsoup4")
+
+# Continue with the rest of your code
+from annotated_text import annotated_text
 from gramformer import Gramformer
 import streamlit as st
 import pandas as pd  
 import torch
 import math
 import re
+
+# Rest of your code...
+
 
 def set_seed(seed):
     torch.manual_seed(seed)
