@@ -1,13 +1,13 @@
 import os
 from difflib import SequenceMatcher
-from PyPDF2 import PdfReader
+import fitz
 import streamlit as st
 
 def extract_text_from_pdf(pdf_path):
-    pdf = PdfReader(pdf_path)
+    pdf = fitz.open(pdf_path)
     text = ''
-    for page in range(len(pdf.pages)):
-        text += pdf.pages[page].extract_text()
+    for page in pdf:
+        text += page.get_text()
     return text
 
 def compare_texts(text1, text2):
@@ -33,7 +33,7 @@ def check_plagiarism(given_pdf_folder, local_pdf_folder):
         st.write(f'\nOverall Plagiarism for {given_pdf}: {overall_plagiarism}%')
 
 # Streamlit app
-st.header('Plagiarism Checker')
+st.title('Plagiarism Checker')
 
 # GUI for selecting the given PDF folder
 given_pdf_folder = st.text_input('Enter Given PDF Folder Path')
@@ -45,4 +45,4 @@ if st.button('Check Plagiarism'):
     if given_pdf_folder and local_pdf_folder:
         check_plagiarism(given_pdf_folder, local_pdf_folder)
     else:
-        st.warning('Please enter both the Given PDF folder path and the Local PDF folder path.')
+        st.warning('Please enter the paths for the given PDF folder and local PDF folder.')
