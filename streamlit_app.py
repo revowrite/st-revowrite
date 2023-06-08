@@ -1,5 +1,5 @@
 import streamlit as st
-from language_tool_python import LanguageTool
+from languagetool import LanguageTool
 
 def correct_grammar(text):
     tool = LanguageTool('en-US')
