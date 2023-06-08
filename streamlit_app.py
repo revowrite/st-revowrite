@@ -1,10 +1,9 @@
 import streamlit as st
-from language_tool_python import LanguageTool
+from pygrammarly import GrammarlyChecker
 
 def correct_grammar(text):
-    tool = LanguageTool('en-US')
-    matches = tool.check(text)
-    corrected_text = LanguageTool.correct(text, matches)
+    checker = GrammarlyChecker()
+    corrected_text = checker.correct(text)
     return corrected_text
 
 def main():
