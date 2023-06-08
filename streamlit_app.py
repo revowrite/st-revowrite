@@ -1,19 +1,23 @@
 import streamlit as st
-import re
+import requests
 
 def correct_grammar(text):
-    # Define your grammar rules here
-    rules = [
-        (r'\b(i)\b', 'I'),
-        (r'\b([a-z])\.', lambda match: match.group(1).upper() + '.'),
-        # Add more rules as needed
-    ]
-
-    # Apply the grammar rules to the text
+    url = "https://api.grammarbot.io/v2/check"
+    params = {
+        "text": text,
+        "language": "en-US"
+    }
+    response = requests.post(url, json=params)
+    result = response.json()
+    
     corrected_text = text
-    for pattern, repl in rules:
-        corrected_text = re.sub(pattern, repl, corrected_text)
-
+    matches = result.get("matches")
+    if matches:
+        for match in matches:
+            replacement = match["replacements"][0]["value"]
+            incorrect = match["context"]["text"]
+            corrected_text = corrected_text.replace(incorrect, replacement)
+    
     return corrected_text
 
 def main():
