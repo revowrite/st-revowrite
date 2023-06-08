@@ -17,16 +17,17 @@ def check_plagiarism(given_pdf, local_folder):
     given_text = extract_text_from_pdf(given_pdf)
 
     total_similarity = 0
-    local_pdfs = [file for file in os.listdir(local_folder) if file.endswith(".pdf")]
-    for pdf in local_pdfs:
-        pdf_path = os.path.join(local_folder, pdf)
-        with open(pdf_path, 'rb') as file:
-            local_text = extract_text_from_pdf(file)
-            similarity = compare_texts(given_text, local_text)
-            st.write(f'{pdf}: {similarity * 100}%')
-            total_similarity += similarity
+    for root, dirs, files in os.walk(local_folder):
+        for file in files:
+            if file.endswith(".pdf"):
+                pdf_path = os.path.join(root, file)
+                with open(pdf_path, 'rb') as file:
+                    local_text = extract_text_from_pdf(file)
+                    similarity = compare_texts(given_text, local_text)
+                    st.write(f'{file}: {similarity * 100}%')
+                    total_similarity += similarity
 
-    overall_plagiarism = (total_similarity / len(local_pdfs)) * 100
+    overall_plagiarism = (total_similarity / len(files)) * 100
     st.write(f'\nOverall Plagiarism: {overall_plagiarism}%')
 
 # Streamlit app
@@ -36,10 +37,10 @@ st.title('Plagiarism Checker')
 given_pdf = st.file_uploader('Select Given PDF File', type='pdf')
 
 # GUI for selecting the local PDF folder
-local_folder = st.text_input('Enter Local PDF Folder Path')
+local_folder = st.folder_uploader('Select Local PDF Folder')
 
 if st.button('Check Plagiarism'):
-    if given_pdf is not None and local_folder:
+    if given_pdf is not None and local_folder is not None:
         check_plagiarism(given_pdf, local_folder)
     else:
-        st.warning('Please select the given PDF file and enter the local PDF folder path.')
+        st.warning('Please select the given PDF file and the local PDF folder.')
