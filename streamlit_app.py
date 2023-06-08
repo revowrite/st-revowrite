@@ -1,26 +1,18 @@
 import streamlit as st
 import re
-from spellchecker import SpellChecker
 
 def correct_grammar(text):
-    spell = SpellChecker()
+    # Define your grammar rules here
+    rules = [
+        (r'\b(i)\b', 'I'),
+        (r'\b([a-z])\.', lambda match: match.group(1).upper() + '.'),
+        # Add more rules as needed
+    ]
 
-    # Tokenize the text into sentences
-    sentences = re.split(r'(?<=[.!?])\s+', text)
-
-    # Correct the spelling for each sentence
-    corrected_sentences = []
-    for sentence in sentences:
-        words = sentence.split()
-        corrected_words = []
-        for word in words:
-            corrected_word = spell.correction(word)
-            corrected_words.append(corrected_word)
-        corrected_sentence = ' '.join(corrected_words)
-        corrected_sentences.append(corrected_sentence)
-
-    # Join the corrected sentences into a single text
-    corrected_text = ' '.join(corrected_sentences)
+    # Apply the grammar rules to the text
+    corrected_text = text
+    for pattern, repl in rules:
+        corrected_text = re.sub(pattern, repl, corrected_text)
 
     return corrected_text
 
