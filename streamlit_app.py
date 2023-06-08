@@ -1,4 +1,3 @@
-from annotated_text import annotated_text
 from bs4 import BeautifulSoup
 from gramformer import Gramformer
 import streamlit as st
@@ -56,7 +55,6 @@ class GramformerDemo:
             highlight_text = gf.highlight(input_text, corrected_sentence)
             color_map = {'d':'#faa', 'a':'#afa', 'c':'#fea'}
             tokens = re.split(r'(<[dac]\s.*?<\/[dac]>)', highlight_text)
-            annotations = []
             for token in tokens:
                 soup = BeautifulSoup(token, 'html.parser')
                 tags = soup.findAll()
@@ -64,21 +62,20 @@ class GramformerDemo:
                     _tag = tags[0].name
                     _type = tags[0]['type']
                     _text = tags[0]['edit']
-                    _color = color_map[_tag]
 
                     if _tag == 'd':
                         _text = strikeout(tags[0].text)
 
-                    annotations.append((_text, _type, _color))
+                    if _type == 'd':
+                        st.write(_text, style='text-decoration: line-through; color: red;')
+                    elif _type == 'a':
+                        st.write(_text, style='color: green;')
+                    else:
+                        st.write(_text)
                 else:
-                    annotations.append(token)
-            args = {
-                'height': 45*(math.ceil(len(highlight_text)/100)),
-                'scrolling': True
-            }
-            annotated_text(*annotations, **args)
+                    st.write(token)
         except Exception as e:
-            st.error('Some error occured!')
+            st.error('Some error occurred!')
             st.stop()
     
     def show_edits(self, gf: object, input_text: str, corrected_sentence: str):
@@ -91,14 +88,14 @@ class GramformerDemo:
             df = df.set_index('type')
             st.table(df)
         except Exception as e:
-            st.error('Some error occured!')
+            st.error('Some error occurred!')
             st.stop()
     
     def main(self):
         github_repo = 'https://github.com/PrithivirajDamodaran/Gramformer'
         st.title("Gramformer")
         st.write(f'GitHub Link - [{github_repo}]({github_repo})')
-        st.markdown('A framework for detecting, highlighting and correcting grammatical errors on natural language text')
+        st.markdown('A framework for detecting, highlighting and correcting grammatical errors in natural language text')
 
         model_type = st.sidebar.selectbox(
             label='Choose Model',
@@ -116,7 +113,7 @@ class GramformerDemo:
             st.warning('TO BE IMPLEMENTED !!')
             st.stop()
 
-        with st.spinner('Loading model..'):
+        with st.spinner('Loading model...'):
             gf = self.load_gf(self.model_map[model_type])
     
         input_text = st.selectbox(
