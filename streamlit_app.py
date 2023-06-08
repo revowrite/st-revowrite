@@ -13,36 +13,32 @@ def extract_text_from_pdf(pdf_path):
 def compare_texts(text1, text2):
     return SequenceMatcher(None, text1, text2).ratio()
 
-def check_plagiarism(given_pdf_folder, local_pdf_folder):
-    given_pdfs = os.listdir(given_pdf_folder)
+def check_plagiarism(given_pdf, local_pdf_folder):
+    given_text = extract_text_from_pdf(given_pdf.name)
     local_pdfs = os.listdir(local_pdf_folder)
 
-    for given_pdf in given_pdfs:
-        given_pdf_path = os.path.join(given_pdf_folder, given_pdf)
-        given_text = extract_text_from_pdf(given_pdf_path)
+    total_similarity = 0
+    for pdf in local_pdfs:
+        pdf_path = os.path.join(local_pdf_folder, pdf)
+        local_text = extract_text_from_pdf(pdf_path)
+        similarity = compare_texts(given_text, local_text)
+        st.write(f'{pdf}: {similarity * 100}%')
+        total_similarity += similarity
 
-        total_similarity = 0
-        for local_pdf in local_pdfs:
-            local_pdf_path = os.path.join(local_pdf_folder, local_pdf)
-            local_text = extract_text_from_pdf(local_pdf_path)
-            similarity = compare_texts(given_text, local_text)
-            st.write(f'{local_pdf}: {similarity * 100}%')
-            total_similarity += similarity
-
-        overall_plagiarism = (total_similarity / len(local_pdfs)) * 100
-        st.write(f'\nOverall Plagiarism for {given_pdf}: {overall_plagiarism}%')
+    overall_plagiarism = (total_similarity / len(local_pdfs)) * 100
+    st.write(f'\nOverall Plagiarism: {overall_plagiarism}%')
 
 # Streamlit app
 st.title('Plagiarism Checker')
 
-# GUI for selecting the given PDF folder
-given_pdf_folder = st.text_input('Enter Given PDF Folder Path')
+# GUI for selecting the given PDF file
+given_pdf = st.file_uploader('Select Given PDF File', type='pdf')
 
 # GUI for selecting the local PDF folder
 local_pdf_folder = st.text_input('Enter Local PDF Folder Path')
 
 if st.button('Check Plagiarism'):
-    if given_pdf_folder and local_pdf_folder:
-        check_plagiarism(given_pdf_folder, local_pdf_folder)
+    if given_pdf is not None and local_pdf_folder:
+        check_plagiarism(given_pdf, local_pdf_folder)
     else:
-        st.warning('Please enter the paths for the given PDF folder and local PDF folder.')
+        st.warning('Please select the given PDF file and enter the local PDF folder path.')
