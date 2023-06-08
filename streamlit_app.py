@@ -35,10 +35,10 @@ st.title('Plagiarism Checker')
 given_pdf = st.file_uploader('Select Given PDF File', type='pdf')
 
 # GUI for selecting the local PDF folder
-local_pdf_folder = st.text_input('Enter Local PDF Folder Path')
+local_pdf_folder = st.folder_uploader('Select Local PDF Folder')
 
 if st.button('Check Plagiarism'):
-    if given_pdf is not None and local_pdf_folder:
+    if given_pdf is not None and local_pdf_folder is not None:
         check_plagiarism(given_pdf, local_pdf_folder)
     else:
-        st.warning('Please select the given PDF file and enter the local PDF folder path.')
+        st.warning('Please select the given PDF file and the local PDF folder.')
