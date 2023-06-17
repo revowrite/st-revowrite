@@ -36,3 +36,10 @@ sector_input = st.text_input("Sector Type")
 # Create the submit button
 if st.button("Submit"):
     generate_csv_file()
+
+# Create a home button to reset the form
+if st.button("Home"):
+    st.caching.clear_cache()
+    st.experimental_rerun()
+
+  
