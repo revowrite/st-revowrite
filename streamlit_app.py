@@ -1,5 +1,6 @@
 import streamlit as st
 import csv
+import base64
 
 def generate_csv_file():
     society_data = {
@@ -37,4 +38,8 @@ if st.button("Submit"):
 
 # Optionally, you can add a success message after the submission
 if 'submitted' in st.session_state and st.session_state.submitted:
-    st.write("CSV File Generated", "Society data has been saved to society_data.csv")
+    st.write("CSV File Generated", "Click the button below to download the CSV file.")
+    csv_file = open('society_data.csv', 'r').read()
+    b64 = base64.b64encode(csv_file.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="society_data.csv">Download CSV File</a>'
+    st.markdown(href, unsafe_allow_html=True)
