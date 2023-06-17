@@ -1,15 +1,15 @@
-import tkinter as tk
+import streamlit as st
 import csv
 
 def generate_csv_file():
     society_data = {
-        'Name of Society': name_entry.get(),
-        'Address': address_entry.get(),
-        'State': state_entry.get(),
-        'District': district_entry.get(),
-        'Date of Registration': registration_entry.get(),
-        'Area of Operation': operation_entry.get(),
-        'Sector Type': sector_entry.get()
+        'Name of Society': name_input,
+        'Address': address_input,
+        'State': state_input,
+        'District': district_input,
+        'Date of Registration': registration_input,
+        'Area of Operation': operation_input,
+        'Sector Type': sector_input
     }
     
     fieldnames = ['Name of Society', 'Address', 'State', 'District', 'Date of Registration', 'Area of Operation', 'Sector Type']
@@ -20,49 +20,20 @@ def generate_csv_file():
         writer.writerow(society_data)
     
     # Optional: Show a confirmation message
-    messagebox.showinfo("CSV File Generated", "Society data has been saved to society_data.csv")
+    st.write("CSV File Generated", "Society data has been saved to society_data.csv")
 
-# Create the main window
-window = tk.Tk()
-window.title("Society Form")
-
-# Create the form labels
-name_label = tk.Label(window, text="Name of Society")
-address_label = tk.Label(window, text="Address")
-state_label = tk.Label(window, text="State")
-district_label = tk.Label(window, text="District")
-registration_label = tk.Label(window, text="Date of Registration")
-operation_label = tk.Label(window, text="Area of Operation")
-sector_label = tk.Label(window, text="Sector Type")
-
-# Create the form entry fields
-name_entry = tk.Entry(window)
-address_entry = tk.Entry(window)
-state_entry = tk.Entry(window)
-district_entry = tk.Entry(window)
-registration_entry = tk.Entry(window)
-operation_entry = tk.Entry(window)
-sector_entry = tk.Entry(window)
+# Create the form inputs
+name_input = st.text_input("Name of Society")
+address_input = st.text_input("Address")
+state_input = st.text_input("State")
+district_input = st.text_input("District")
+registration_input = st.date_input("Date of Registration")
+operation_input = st.text_input("Area of Operation")
+sector_input = st.text_input("Sector Type")
 
 # Create the submit button
-submit_button = tk.Button(window, text="Submit", command=generate_csv_file)
+submit_button = st.button("Submit", on_click=generate_csv_file)
 
-# Arrange the form elements using grid layout
-name_label.grid(row=0, column=0)
-name_entry.grid(row=0, column=1)
-address_label.grid(row=1, column=0)
-address_entry.grid(row=1, column=1)
-state_label.grid(row=2, column=0)
-state_entry.grid(row=2, column=1)
-district_label.grid(row=3, column=0)
-district_entry.grid(row=3, column=1)
-registration_label.grid(row=4, column=0)
-registration_entry.grid(row=4, column=1)
-operation_label.grid(row=5, column=0)
-operation_entry.grid(row=5, column=1)
-sector_label.grid(row=6, column=0)
-sector_entry.grid(row=6, column=1)
-submit_button.grid(row=7, column=1)
-
-# Start the GUI event loop
-window.mainloop()
+# Optionally, you can add a success message after the submission
+if st.session_state.submitted:
+    st.write("CSV File Generated", "Society data has been saved to society_data.csv")
