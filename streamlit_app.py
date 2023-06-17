@@ -1,149 +1,68 @@
-from annotated_text import annotated_text
-from bs4 import BeautifulSoup
-from gramformer import Gramformer
-import streamlit as st
-import pandas as pd
-import torch
-import math
-import re
+import tkinter as tk
+import csv
 
-def set_seed(seed):
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
-set_seed(1212)
-
-class GramformerDemo:
-
-    def __init__(self):
-        st.set_page_config(
-            page_title="Gramformer Demo",
-            initial_sidebar_state="expanded",
-            layout="wide"
-            )
-        self.model_map = {
-            'Corrector': 1,
-            'Detector - coming soon': 2
-            }
-        self.examples = [
-            "what be the reason for everyone leave the comapny",
-            "He are moving here.",
-            "I am doing fine. How is you?",
-            "How is they?",
-            "Matt like fish",
-            "the collection of letters was original used by the ancient Romans",
-            "We enjoys horror movies",
-            "Anna and Mike is going skiing",
-            "I walk to the store and I bought milk",
-            " We all eat the fish and then made dessert",
-            "I will eat fish for dinner and drink milk",
-            ]
-
-    @st.cache(show_spinner=False, suppress_st_warning=True, allow_output_mutation=True)
-    def load_gf(self, model: int):
-        """
-            Load Gramformer model
-        """
-        gf = Gramformer(models=model, use_gpu=False)
-        return gf
+def generate_csv_file():
+    society_data = {
+        'Name of Society': name_entry.get(),
+        'Address': address_entry.get(),
+        'State': state_entry.get(),
+        'District': district_entry.get(),
+        'Date of Registration': registration_entry.get(),
+        'Area of Operation': operation_entry.get(),
+        'Sector Type': sector_entry.get()
+    }
     
-    def show_highlights(self, gf: object, input_text: str, corrected_sentence: str):
-        """
-            To show highlights
-        """
-        try:
-            strikeout = lambda x: '\u0336'.join(x) + '\u0336'
-            highlight_text = gf.highlight(input_text, corrected_sentence)
-            color_map = {'d':'#faa', 'a':'#afa', 'c':'#fea'}
-            tokens = re.split(r'(<[dac]\s.*?<\/[dac]>)', highlight_text)
-            annotations = []
-            for token in tokens:
-                soup = BeautifulSoup(token, 'html.parser')
-                tags = soup.findAll()
-                if tags:
-                    _tag = tags[0].name
-                    _type = tags[0]['type']
-                    _text = tags[0]['edit']
-                    _color = color_map[_tag]
+    fieldnames = ['Name of Society', 'Address', 'State', 'District', 'Date of Registration', 'Area of Operation', 'Sector Type']
 
-                    if _tag == 'd':
-                        _text = strikeout(tags[0].text)
-
-                    annotations.append((_text, _type, _color))
-                else:
-                    annotations.append(token)
-            args = {
-                'height': 45*(math.ceil(len(highlight_text)/100)),
-                'scrolling': True
-            }
-            annotated_text(*annotations, **args)
-        except Exception as e:
-            st.error('Some error occured!')
-            st.stop()
+    with open('society_data.csv', 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow(society_data)
     
-    def show_edits(self, gf: object, input_text: str, corrected_sentence: str):
-        """
-            To show edits
-        """
-        try:
-            edits = gf.get_edits(input_text, corrected_sentence)
-            df = pd.DataFrame(edits, columns=['type','original word', 'original start', 'original end', 'correct word', 'correct start', 'correct end'])
-            df = df.set_index('type')
-            st.table(df)
-        except Exception as e:
-            st.error('Some error occured!')
-            st.stop()
-    
-    def main(self):
-        github_repo = 'https://github.com/PrithivirajDamodaran/Gramformer'
-        st.title("Gramformer")
-        st.write(f'GitHub Link - [{github_repo}]({github_repo})')
-        st.markdown('A framework for detecting, highlighting and correcting grammatical errors on natural language text')
+    # Optional: Show a confirmation message
+    messagebox.showinfo("CSV File Generated", "Society data has been saved to society_data.csv")
 
-        model_type = st.sidebar.selectbox(
-            label='Choose Model',
-            options=list(self.model_map.keys())
-            )
-        if model_type == 'Corrector':
-            max_candidates = st.sidebar.number_input(
-                label='Max candidates',
-                min_value=1,
-                max_value=10,
-                value=1
-                )
-        else:
-            # NOTE: 
-            st.warning('TO BE IMPLEMENTED !!')
-            st.stop()
+# Create the main window
+window = tk.Tk()
+window.title("Society Form")
 
-        with st.spinner('Loading model..'):
-            gf = self.load_gf(self.model_map[model_type])
-    
-        input_text = st.selectbox(
-            label="Choose an example",
-            options=self.examples
-            )
-        input_text = st.text_input(
-            label="Input text",
-            value=input_text
-        )
+# Create the form labels
+name_label = tk.Label(window, text="Name of Society")
+address_label = tk.Label(window, text="Address")
+state_label = tk.Label(window, text="State")
+district_label = tk.Label(window, text="District")
+registration_label = tk.Label(window, text="Date of Registration")
+operation_label = tk.Label(window, text="Area of Operation")
+sector_label = tk.Label(window, text="Sector Type")
 
-        if input_text.strip():
-            results = gf.correct(input_text, max_candidates=max_candidates)
-            corrected_sentence, score = results[0]
-            st.markdown(f'#### Output:')
-            st.write('')
-            st.success(corrected_sentence)
-            exp1 = st.beta_expander(label='Show highlights', expanded=True)
-            with exp1:
-                self.show_highlights(gf, input_text, corrected_sentence)
-            exp2 = st.beta_expander(label='Show edits')
-            with exp2:
-                self.show_edits(gf, input_text, corrected_sentence)
+# Create the form entry fields
+name_entry = tk.Entry(window)
+address_entry = tk.Entry(window)
+state_entry = tk.Entry(window)
+district_entry = tk.Entry(window)
+registration_entry = tk.Entry(window)
+operation_entry = tk.Entry(window)
+sector_entry = tk.Entry(window)
 
-        else:
-            st.warning("Please select/enter text to proceed")
-        
-if __name__ == "__main__":
-    obj = GramformerDemo()
-    obj.main()
+# Create the submit button
+submit_button = tk.Button(window, text="Submit", command=generate_csv_file)
+
+# Arrange the form elements using grid layout
+name_label.grid(row=0, column=0)
+name_entry.grid(row=0, column=1)
+address_label.grid(row=1, column=0)
+address_entry.grid(row=1, column=1)
+state_label.grid(row=2, column=0)
+state_entry.grid(row=2, column=1)
+district_label.grid(row=3, column=0)
+district_entry.grid(row=3, column=1)
+registration_label.grid(row=4, column=0)
+registration_entry.grid(row=4, column=1)
+operation_label.grid(row=5, column=0)
+operation_entry.grid(row=5, column=1)
+sector_label.grid(row=6, column=0)
+sector_entry.grid(row=6, column=1)
+submit_button.grid(row=7, column=1)
+
+# Start the GUI event loop
+window.mainloop()
