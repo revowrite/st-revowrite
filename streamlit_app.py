@@ -39,10 +39,6 @@ if st.button("Submit"):
 
 # Create a home button to redirect to another website
 if st.button("Home"):
-    st.markdown("""
-        <script>
-            window.location.href = "https://techcodebhavesh.github.io/crcba/#hero";
-        </script>
-    """, unsafe_allow_html=True)
+    webbrowser.open_new_tab("https://techcodebhavesh.github.io/crcba/#hero")
 
 
