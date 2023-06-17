@@ -39,5 +39,5 @@ if st.button("Submit"):
 
 # Create a home button to redirect to another website
 if st.button("Home"):
-    st.redirect("https://techcodebhavesh.github.io/crcba/#hero")  # Replace with your desired website URL
+    st.markdown('<a href="https://techcodebhavesh.github.io/crcba/#hero" target="_blank">Go to External Website</a>', unsafe_allow_html=True)
 
