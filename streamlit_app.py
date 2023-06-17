@@ -37,9 +37,7 @@ sector_input = st.text_input("Sector Type")
 if st.button("Submit"):
     generate_csv_file()
 
-# Create a home button to reset the form
+# Create a home button to redirect to another website
 if st.button("Home"):
-    st.caching.clear_cache()
-    st.experimental_rerun()
+    st.redirect("https://www.example.com")  # Replace with your desired website URL
 
-  
