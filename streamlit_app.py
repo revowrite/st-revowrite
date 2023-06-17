@@ -1,5 +1,6 @@
 import streamlit as st
 import csv
+from streamlit import SessionState
 
 def generate_csv_file():
     society_data = {
@@ -20,7 +21,10 @@ def generate_csv_file():
         writer.writerow(society_data)
     
     # Set the submitted flag to True
-    submitted = True
+    session_state.submitted = True
+
+# Create a SessionState object
+session_state = SessionState.get(submitted=False)
 
 # Create the form inputs
 name_input = st.text_input("Name of Society")
@@ -36,5 +40,5 @@ if st.button("Submit"):
     generate_csv_file()
 
 # Optionally, you can add a success message after the submission
-if submitted:
+if session_state.submitted:
     st.write("CSV File Generated", "Society data has been saved to society_data.csv")
