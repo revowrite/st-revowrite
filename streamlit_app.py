@@ -1,27 +1,28 @@
 import streamlit as st
 import csv
+import io
 import base64
 
 def generate_csv_file():
-    society_data = {
-        'Name of Society': name_input,
-        'Address': address_input,
-        'State': state_input,
-        'District': district_input,
-        'Date of Registration': registration_input,
-        'Area of Operation': operation_input,
-        'Sector Type': sector_input
-    }
-    
-    fieldnames = ['Name of Society', 'Address', 'State', 'District', 'Date of Registration', 'Area of Operation', 'Sector Type']
+    # Create a CSV file in memory
+    csv_buffer = io.StringIO()
+    writer = csv.writer(csv_buffer)
 
-    with open('society_data.csv', 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerow(society_data)
-    
-    # Set the submitted flag to True
-    st.session_state.submitted = True
+    # Write the header row
+    writer.writerow(['Name of Society', 'Address', 'State', 'District', 'Date of Registration', 'Area of Operation', 'Sector Type'])
+
+    # Write the data row
+    writer.writerow([name_input, address_input, state_input, district_input, registration_input, operation_input, sector_input])
+
+    # Retrieve the value from the buffer
+    csv_buffer.seek(0)
+    csv_data = csv_buffer.getvalue()
+    csv_buffer.close()
+
+    # Create a download link for the CSV file
+    b64 = base64.b64encode(csv_data.encode()).decode()
+    href = f'<a href="data:text/csv;base64,{b64}" download="society_data.csv">Download CSV File</a>'
+    st.markdown(href, unsafe_allow_html=True)
 
 # Create the form inputs
 name_input = st.text_input("Name of Society")
@@ -35,11 +36,3 @@ sector_input = st.text_input("Sector Type")
 # Create the submit button
 if st.button("Submit"):
     generate_csv_file()
-
-# Optionally, you can add a success message after the submission
-if 'submitted' in st.session_state and st.session_state.submitted:
-    st.write("CSV File Generated", "Click the button below to download the CSV file.")
-    csv_file = open('society_data.csv', 'r').read()
-    b64 = base64.b64encode(csv_file.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="society_data.csv">Download CSV File</a>'
-    st.markdown(href, unsafe_allow_html=True)
