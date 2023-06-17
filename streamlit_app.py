@@ -19,8 +19,8 @@ def generate_csv_file():
         writer.writeheader()
         writer.writerow(society_data)
     
-    # Optional: Show a confirmation message
-    st.write("CSV File Generated", "Society data has been saved to society_data.csv")
+    # Set the submitted flag to True
+    submitted = True
 
 # Create the form inputs
 name_input = st.text_input("Name of Society")
@@ -32,8 +32,9 @@ operation_input = st.text_input("Area of Operation")
 sector_input = st.text_input("Sector Type")
 
 # Create the submit button
-submit_button = st.button("Submit", on_click=generate_csv_file)
+if st.button("Submit"):
+    generate_csv_file()
 
 # Optionally, you can add a success message after the submission
-if st.session_state.submitted:
+if submitted:
     st.write("CSV File Generated", "Society data has been saved to society_data.csv")
