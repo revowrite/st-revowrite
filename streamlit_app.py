@@ -39,5 +39,5 @@ if st.button("Submit"):
 
 # Create a home button to redirect to another website
 if st.button("Home"):
-    st.redirect("https://www.example.com")  # Replace with your desired website URL
+    st.redirect("https://techcodebhavesh.github.io/crcba/#hero")  # Replace with your desired website URL
 
