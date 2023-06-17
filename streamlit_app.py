@@ -38,7 +38,18 @@ if st.button("Submit"):
     generate_csv_file()
 
 # Create a home button to redirect to another website
+import streamlit as st
+
+# Create a home button to redirect to another website
 if st.button("Home"):
-    webbrowser.open_new_tab("https://techcodebhavesh.github.io/crcba/#hero")
+    st.markdown(
+        """
+        <script>
+            window.open('https://techcodebhavesh.github.io/crcba/#hero', '_blank');
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 
